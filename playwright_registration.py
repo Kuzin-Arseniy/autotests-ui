@@ -28,6 +28,6 @@ with sync_playwright() as playwright:
     registration_button.click()
 
     # Проверяем, что на странице "Dashboard" отображается заголовок "Dashboard"
-    dashboard_header = page.get_by_test_id('dashboard-toolbar-title-text')
-    expect(dashboard_header).to_be_visible()
-    expect(dashboard_header).to_have_text("Dashboard")
+    dashboard_title = page.get_by_test_id('dashboard-toolbar-title-text')
+    expect(dashboard_title).to_be_visible()
+    expect(dashboard_title).to_have_text("Dashboard")
