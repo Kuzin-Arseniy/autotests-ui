@@ -29,6 +29,6 @@ with sync_playwright() as playwright:
     registration_password_input.fill("password")
 
     # Проверяем, что кнопка "Registration" есть и она активна.
-    # Кнопку нашли ранее, поэтому провряем только видимость и активность
+    # Кнопку нашли ранее, поэтому просто проверяем видимость и активность
     expect(registration_button).to_be_visible()
     expect(registration_button).not_to_be_disabled()
