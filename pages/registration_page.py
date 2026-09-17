@@ -10,7 +10,7 @@ class RegistrationPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
 
-        self.registration_component = RegistrationFormComponent(page)
+        self.registration_form = RegistrationFormComponent(page)
 
         # Локаторы элементов страницы
         self.registration_button = Button(
