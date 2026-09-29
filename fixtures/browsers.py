@@ -1,21 +1,13 @@
-import pytest  # Импортируем pytest
-from playwright.sync_api import Playwright, expect, \
-Page  # Импортируем класс страницы, будем использовать его для аннотации типов
-
+import pytest # Импортируем pytest
+from _pytest.fixtures import SubRequest
+from playwright.sync_api import Playwright, Page  # Импортируем класс страницы, будем использовать его для аннотации типов
 from pages.authentication.registration_page import RegistrationPage
+from tools.playwright.pages import initialize_playwright_page
 
 
 @pytest.fixture  # Объявляем фикстуру, по умолчанию скоуп function, то что нам нужно
-def chromium_page(playwright: Playwright) -> Page:  # Аннотируем возвращаемое фикстурой значение
-    # Ниже идет инициализация и открытие новой страницы.
-    # Запускаем браузер
-    browser = playwright.chromium.launch(headless=False)
-
-    # Передаем страницу для использования в тесте
-    yield browser.new_page()
-
-    # Закрываем браузер после выполнения тестов
-    browser.close()
+def chromium_page(request: SubRequest, playwright: Playwright) -> Page:
+    yield from initialize_playwright_page(playwright, test_name=request.node.name)
 
 
 @pytest.fixture(scope="session")
@@ -35,12 +27,10 @@ def initialize_browser_state(playwright: Playwright):
     # Закрываем браузер в текущем контексте
     browser.close()
 
-@pytest.fixture # Область видимости "function" используется по умолчанию
-def chromium_page_with_state(initialize_browser_state, playwright: Playwright) -> Page:
-    # Блок setup. Создаем страницу в новом контексте с использованием browser-state.json (данные авторизации)
-    browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context(storage_state="browser-state.json")  # Указываем файл с сохраненным состоянием
-    yield context.new_page() # Передаем поток с готовым контекстом
-    browser.close()
-    # Закрываем браузер после каждого теста, так как браузер открывается внутри данной фикстуры для каждого теста.
-    # У встроенной фикстуры playwright нет browser.close() + она имеет scope="session"
+@pytest.fixture
+def chromium_page_with_state(initialize_browser_state, request: SubRequest, playwright: Playwright) -> Page:
+    yield from initialize_playwright_page(
+        playwright,
+        test_name=request.node.name,
+        storage_state="browser-state.json"
+    )
